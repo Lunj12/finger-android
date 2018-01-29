@@ -1,0 +1,2 @@
+model_checkpoint_path: "finger_linear.chkp"
+all_model_checkpoint_paths: "finger_linear.chkp"
