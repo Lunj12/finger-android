@@ -35,6 +35,8 @@ public class PhotoActivity extends AppCompatActivity {
         next = (Button) findViewById(R.id.next);
         result_photo = (ImageView) findViewById(R.id.imageView);
 
+        next.setVisibility(View.GONE);
+
         // check camera availability
         if (!hasCamera()) {
             take.setEnabled(false);
@@ -68,6 +70,7 @@ public class PhotoActivity extends AppCompatActivity {
             sizedPhoto.getPixels(pixels, 0, width, 0, 0, width, height);
             flattenImage();
             result_photo.setImageBitmap(photo);
+            next.setVisibility(View.VISIBLE);
         }
 
     }
@@ -87,6 +90,7 @@ public class PhotoActivity extends AppCompatActivity {
         Intent goToRecog = new Intent();
         goToRecog.setClass(this, RecognitionActivity.class);
         goToRecog.putExtra("imageArray", flattenedImage);
+        startActivity(goToRecog);
         finish(); // prevent it going to stack
     }
 }
