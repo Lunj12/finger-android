@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.lunj.fingerrecognition.FirstActivity"
+    tools:layout_editor_absoluteY="81dp">
+
+    <Button
+        android:id="@+id/retake"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="42dp"
+        android:onClick="reLaunchCamera"
+        android:text="Take Another"
+        app:layout_constraintBaseline_toBaselineOf="@+id/finish_go"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/next_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginBottom="28dp"
+        android:onClick="recognize"
+        android:text="Yes, Next"
+        app:layout_constraintBaseline_toBaselineOf="@+id/next_2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/take"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="26dp"
+        android:layout_marginLeft="19dp"
+        android:onClick="launchCamera"
+        android:text="Take a Photo"
+        app:layout_constraintBottom_toTopOf="@+id/next_1"
+        app:layout_constraintStart_toStartOf="@+id/finish_go" />
+
+    <Button
+        android:id="@+id/next_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:onClick="launchCamera"
+        android:text="Yes, Next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/next_1" />
+
+    <Button
+        android:id="@+id/finish_go"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="105dp"
+        android:layout_marginLeft="114dp"
+        android:onClick="launchCamera"
+        android:text="Finish and Go"
+        app:layout_constraintBaseline_toBaselineOf="@+id/next_1"
+        app:layout_constraintEnd_toEndOf="@+id/retake"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:minHeight="200dp"
+        android:minWidth="200dp"
+        app:layout_constraintStart_toStartOf="@+id/sum_field"
+        app:layout_constraintTop_toTopOf="@+id/sum_field"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="96dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/add_digit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add a digit to the result." />
+
+        <RadioButton
+            android:id="@+id/sum_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add another number and sum up." />
+
+        <RadioButton
+            android:id="@+id/finish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finish, go to web search!" />
+
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/welcome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="49dp"
+        android:layout_marginStart="49dp"
+        android:layout_marginTop="34dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Welcome, please take a photo!"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/result_field"
+        android:layout_width="200dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="1dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/sum_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcome" />
+
+    <TextView
+        android:id="@+id/sum_field"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="36dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcome" />
+
+</android.support.constraint.ConstraintLayout>
