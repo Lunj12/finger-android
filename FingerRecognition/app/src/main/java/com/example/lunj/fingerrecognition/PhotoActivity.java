@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 
@@ -22,8 +21,8 @@ public class PhotoActivity extends AppCompatActivity {
 
     // class instances view
     ImageView result_photo;
-    Button take, next_1;
-    EditText welcome;
+    Button take, next;
+
 
 
     @Override
@@ -33,9 +32,8 @@ public class PhotoActivity extends AppCompatActivity {
 
         // find views and set initial visibility
         take = (Button) findViewById(R.id.take);
-        next_1 = (Button) findViewById(R.id.next_1);
+        next = (Button) findViewById(R.id.next);
         result_photo = (ImageView) findViewById(R.id.imageView);
-        welcome = (EditText) findViewById(R.id.welcome);
 
         // check camera availability
         if (!hasCamera()) {
@@ -51,6 +49,9 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     public void launchCamera(View v) {
+        // reinitialize the data if retake a photo
+        pixels = new int[64 * 64];
+        flattenedImage = new float[64 * 64 * 3];
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(i, REQUEST_CAPTURE);
     }
@@ -76,10 +77,16 @@ public class PhotoActivity extends AppCompatActivity {
             int redValue = Color.red(pixels[i]);
             int blueValue = Color.blue(pixels[i]);
             int greenValue = Color.green(pixels[i]);
-            this.flattenedImage[3 * i] = (float) redValue / 255;
-            this.flattenedImage[3 * i + 1] = (float) blueValue / 255;
-            this.flattenedImage[3 * i + 2] = (float) greenValue / 255;
+            flattenedImage[3 * i] = (float) redValue / 255;
+            flattenedImage[3 * i + 1] = (float) blueValue / 255;
+            flattenedImage[3 * i + 2] = (float) greenValue / 255;
         }
     }
 
+    public void enterRecognition(View view) {
+        Intent goToRecog = new Intent();
+        goToRecog.setClass(this, RecognitionActivity.class);
+        goToRecog.putExtra("imageArray", flattenedImage);
+        finish(); // prevent it going to stack
+    }
 }

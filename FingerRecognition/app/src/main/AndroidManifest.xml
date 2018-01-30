@@ -20,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RecognizationActivity"></activity>
+        <activity android:name=".RecognitionActivity"></activity>
     </application>
 
 </manifest>
