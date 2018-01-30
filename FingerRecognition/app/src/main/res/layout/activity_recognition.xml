@@ -78,7 +78,7 @@
             android:id="@+id/keep_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Keep this result." />
+            android:text="Keep this result and finish." />
 
         <RadioButton
             android:id="@+id/abandon_result"

@@ -72,7 +72,7 @@ public class PhotoActivity extends AppCompatActivity {
 
             // resize image and get flattened array
             int width = sizedPhoto.getWidth();
-            int height = sizedPhoto.getWidth();
+            int height = sizedPhoto.getHeight();
             sizedPhoto.getPixels(pixels, 0, width, 0, 0, width, height);
 //            flattenImage();
             result_photo.setImageBitmap(photo);
@@ -87,11 +87,12 @@ public class PhotoActivity extends AppCompatActivity {
     protected void flattenImage() {
         for (int i = 0; i < pixels.length; i++) {
             int redValue = Color.red(pixels[i]);
-            int blueValue = Color.blue(pixels[i]);
             int greenValue = Color.green(pixels[i]);
+            int blueValue = Color.blue(pixels[i]);
             flattenedImage[3 * i] = (float) redValue / 255;
-            flattenedImage[3 * i + 1] = (float) blueValue / 255;
-            flattenedImage[3 * i + 2] = (float) greenValue / 255;
+            flattenedImage[3 * i + 1] = (float) greenValue / 255;
+            flattenedImage[3 * i + 2] = (float) blueValue / 255;
+
         }
     }
 
