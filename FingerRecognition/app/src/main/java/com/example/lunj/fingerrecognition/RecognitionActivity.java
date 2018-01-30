@@ -10,6 +10,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.lunj.fingerrecognition.models.Classification;
+import com.example.lunj.fingerrecognition.models.Classifier;
+import com.example.lunj.fingerrecognition.models.TensorFlowClassifier;
+
+
 public class RecognitionActivity extends AppCompatActivity {
 
     // class instance variables
@@ -23,6 +28,10 @@ public class RecognitionActivity extends AppCompatActivity {
     TextView result_field, sum_field;
     Button confirm, take_another, finish_go;
     EditText recog_text, sum_text;
+
+    // tensorflow classfier
+    Classifier myClassifier;
+    final int IMAGE_ARRAY_LENGTH = 64 * 64 * 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +69,7 @@ public class RecognitionActivity extends AppCompatActivity {
         imageArray = caller.getFloatArrayExtra("imageArray");
 
         // recognize and calculate;
+        loadModel();
 
     }
 
@@ -135,7 +145,7 @@ public class RecognitionActivity extends AppCompatActivity {
         }
 
         // reset the two text fields
-        resetTextFields();
+        resetTextFields("" + recognition_result, "" + historical_sum);
         // disable the confirm button
         confirm.setAlpha(.5f);
         confirm.setClickable(false);
@@ -145,9 +155,39 @@ public class RecognitionActivity extends AppCompatActivity {
         }
     }
 
-    public void resetTextFields(){
+    public void resetTextFields(String result_str, String sum_str) {
+        if (result_str != null) {
+            recog_text.setText(result_str);
+        }
+
+        if (sum_str != null) {
+            sum_text.setText(sum_str);
+        }
+    }
+
+    private void loadModel() {
+        try {
+            myClassifier = TensorFlowClassifier.create(getAssets(), "TensorFlow",
+                    "opt_finger_linear.pb", "labels.txt", IMAGE_ARRAY_LENGTH,
+                    "X", "predicts", false);
+
+        } catch (final Exception e) {
+            throw new RuntimeException("Error initializing classifier!", e);
+        }
 
     }
 
+    public void TFRecognize() {
+        String text = "";
+        final Classification res = myClassifier.recognize(imageArray);
+        if (res.getLabel() == null) {
+            text += myClassifier.name() + ": ?/n";
+        } else {
+            recognition_result = Integer.parseInt(res.getLabel());
+            text += String.format("%s: %s, %f/n", myClassifier.name(), res.getLabel());
+        }
+
+        resetTextFields(text, null);
+    }
 }
 
