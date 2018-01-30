@@ -29,7 +29,7 @@ public class RecognitionActivity extends AppCompatActivity {
     Button confirm, take_another, finish_go;
     EditText recog_text, sum_text;
 
-    // tensorflow classfier
+    // tensorflow classifier
     Classifier myClassifier;
     final int IMAGE_ARRAY_LENGTH = 64 * 64 * 3;
 
@@ -63,6 +63,7 @@ public class RecognitionActivity extends AppCompatActivity {
         take_another.setClickable(false);
         finish_go.setAlpha(.5f);
         finish_go.setClickable(false);
+        sum_field.setText("" + historical_sum);
 
         // retrieve image array from intent
         Intent caller = getIntent();
@@ -70,7 +71,7 @@ public class RecognitionActivity extends AppCompatActivity {
 
         // recognize and calculate;
         loadModel();
-
+        TFRecognize();
     }
 
     @Override
@@ -157,11 +158,11 @@ public class RecognitionActivity extends AppCompatActivity {
 
     public void resetTextFields(String result_str, String sum_str) {
         if (result_str != null) {
-            recog_text.setText(result_str);
+            result_field.setText(result_str);
         }
 
         if (sum_str != null) {
-            sum_text.setText(sum_str);
+            sum_field.setText(sum_str);
         }
     }
 
@@ -184,7 +185,7 @@ public class RecognitionActivity extends AppCompatActivity {
             text += myClassifier.name() + ": ?/n";
         } else {
             recognition_result = Integer.parseInt(res.getLabel());
-            text += String.format("%s: %s, %f/n", myClassifier.name(), res.getLabel());
+            text += String.format("%s: %s, %f", myClassifier.name(), res.getLabel(), res.getConf());
         }
 
         resetTextFields(text, null);

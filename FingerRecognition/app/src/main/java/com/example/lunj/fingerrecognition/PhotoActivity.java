@@ -74,8 +74,7 @@ public class PhotoActivity extends AppCompatActivity {
             int width = sizedPhoto.getWidth();
             int height = sizedPhoto.getWidth();
             sizedPhoto.getPixels(pixels, 0, width, 0, 0, width, height);
-            flattenImage();
-
+//            flattenImage();
             result_photo.setImageBitmap(photo);
 
             // enable the next button
@@ -97,6 +96,7 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     public void enterRecognition(View view) {
+        flattenImage(); // flatten the image when going to recognition
         Intent goToRecog = new Intent();
         goToRecog.setClass(this, RecognitionActivity.class);
         goToRecog.putExtra("imageArray", flattenedImage);
