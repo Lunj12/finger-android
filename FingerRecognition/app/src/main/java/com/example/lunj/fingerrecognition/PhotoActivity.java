@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 
@@ -22,7 +23,7 @@ public class PhotoActivity extends AppCompatActivity {
     // class instances view
     ImageView result_photo;
     Button take, next;
-
+    EditText welcome;
 
 
     @Override
@@ -30,12 +31,15 @@ public class PhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
 
-        // find views and set initial visibility
+        // find views and set initial button clickablity
         take = (Button) findViewById(R.id.take);
         next = (Button) findViewById(R.id.next);
         result_photo = (ImageView) findViewById(R.id.imageView);
+        welcome = (EditText) findViewById((R.id.welcome));
 
-        next.setVisibility(View.GONE);
+        next.setAlpha(0.5f);
+        next.setClickable(false);
+        welcome.setKeyListener(null);
 
         // check camera availability
         if (!hasCamera()) {
@@ -65,12 +69,18 @@ public class PhotoActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap photo = (Bitmap) extras.get("data");
             Bitmap sizedPhoto = Bitmap.createScaledBitmap(photo, 64, 64, true);
+
+            // resize image and get flattened array
             int width = sizedPhoto.getWidth();
             int height = sizedPhoto.getWidth();
             sizedPhoto.getPixels(pixels, 0, width, 0, 0, width, height);
             flattenImage();
+
             result_photo.setImageBitmap(photo);
-            next.setVisibility(View.VISIBLE);
+
+            // enable the next button
+            next.setAlpha(1f);
+            next.setClickable(true);
         }
 
     }

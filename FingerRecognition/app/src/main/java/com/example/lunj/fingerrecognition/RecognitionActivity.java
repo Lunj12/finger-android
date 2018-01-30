@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,12 +16,13 @@ public class RecognitionActivity extends AppCompatActivity {
     float[] imageArray;
     int recognition_result = -1;
     int historical_sum;
-    char RADIO_OPTIONS; // 'N' : None, 'A' : abandon, 'D' : add digit, 'S' : sum up
+    char RADIO_OPTIONS; // 'N' : None, 'A', abandoned, S' : sum-up
 
     // class instances view
     RadioGroup rg;
     TextView result_field, sum_field;
-    Button take_another, finish_go;
+    Button confirm, take_another, finish_go;
+    EditText recog_text, sum_text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +30,7 @@ public class RecognitionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recognition);
 
         // restore saved instance state
-        if (savedInstanceState!=null) {
+        if (savedInstanceState != null) {
             historical_sum = savedInstanceState.getInt("historical_sum");
             RADIO_OPTIONS = savedInstanceState.getChar("RADIO_OPTIONS");
         } else {
@@ -36,11 +38,22 @@ public class RecognitionActivity extends AppCompatActivity {
             RADIO_OPTIONS = 'N';
         }
 
-        // get views
+        // get views and setup initial properties
         rg = (RadioGroup) findViewById(R.id.radioGroup);
         result_field = (TextView) findViewById(R.id.result_field);
         sum_field = (TextView) findViewById(R.id.sum_field);
+        confirm = (Button) findViewById(R.id.confirm);
         take_another = (Button) findViewById(R.id.take_another);
+        finish_go = (Button) findViewById(R.id.finish_go);
+        recog_text = (EditText) findViewById(R.id.recog_result);
+        sum_text = (EditText) findViewById(R.id.histo_sum);
+
+        recog_text.setKeyListener(null);
+        sum_text.setKeyListener(null);
+        take_another.setAlpha(.5f);
+        take_another.setClickable(false);
+        finish_go.setAlpha(.5f);
+        finish_go.setClickable(false);
 
         // retrieve image array from intent
         Intent caller = getIntent();
@@ -48,37 +61,6 @@ public class RecognitionActivity extends AppCompatActivity {
 
         // recognize and calculate;
 
-
-
-        // listener for radio group
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.abandon_result:
-                        // add abandon mark 'A', take_another button appears
-                        RADIO_OPTIONS = 'A';
-                        take_another.setVisibility(View.VISIBLE);
-                        break;
-                    case R.id.add_digit:
-                        // add digit mark 'D', take_another button appears
-                        RADIO_OPTIONS = 'D';
-                        take_another.setVisibility(View.VISIBLE);
-                        break;
-                    case R.id.sum_up:
-                        // sum up mark 'S', take_another button appears
-                        RADIO_OPTIONS = 'S';
-                        take_another.setVisibility(View.VISIBLE);
-                        break;
-                    case R.id.finish:
-                        // finish_go button appears
-                        RADIO_OPTIONS = 'N';
-                        finish_go.setVisibility(View.VISIBLE);
-                        break;
-                }
-
-            }
-        });
     }
 
     @Override
@@ -97,9 +79,6 @@ public class RecognitionActivity extends AppCompatActivity {
                 historical_sum -= recognition_result; // abandon old result;
                 msg = "Old result abandoned! Go for a new one!";
                 break;
-            case 'D':
-                msg = "Go to add a new digit!";
-                break;
             case 'S':
                 msg = "Go to add a new value for sum-up!";
                 break;
@@ -114,5 +93,61 @@ public class RecognitionActivity extends AppCompatActivity {
     }
 
 
+    public void confirmOption(View view) {
+        int checkedId = rg.getCheckedRadioButtonId();
+        // Options for radio group
+        switch (checkedId) {
+            case -1:
+                Toast.makeText(getApplicationContext(), "No option selected!", Toast.LENGTH_SHORT).show();
+                return;
+            case R.id.keep_result:
+                // toast
+                Toast.makeText(getApplicationContext(), "Result Kept! Go to finish!", Toast.LENGTH_SHORT).show();
+                // manipulate numbers
+                historical_sum += recognition_result;
+                // set button
+                finish_go.setAlpha(1f);
+                finish_go.setClickable(true);
+                break;
+            case R.id.abandon_result:
+                // add abandon mark 'A'
+                RADIO_OPTIONS = 'A';
+                // toast
+                Toast.makeText(getApplicationContext(), "Result Abandoned!", Toast.LENGTH_SHORT).show();
+                // manipulate numbers
+                recognition_result = -1;
+                // set button
+                finish_go.setAlpha(1f);
+                finish_go.setClickable(true);
+                take_another.setAlpha(1f);
+                take_another.setClickable(true);
+                break;
+            case R.id.sum_up:
+                // sum up mark 'S'
+                RADIO_OPTIONS = 'S';
+                Toast.makeText(getApplicationContext(), "Result Kept! Go to another", Toast.LENGTH_SHORT).show();
+                // manipulate numbers
+                historical_sum += recognition_result;
+                // set button
+                take_another.setAlpha(1f);
+                take_another.setClickable(true);
+                break;
+        }
+
+        // reset the two text fields
+        resetTextFields();
+        // disable the confirm button
+        confirm.setAlpha(.5f);
+        confirm.setClickable(false);
+        // disable all children in the radio group
+        for (int i = 0; i < rg.getChildCount(); i++) {
+            rg.getChildAt(i).setEnabled(false);
+        }
+    }
+
+    public void resetTextFields(){
+
+    }
 
 }
+

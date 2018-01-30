@@ -10,8 +10,8 @@
     <TextView
         android:id="@+id/result_field"
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="12dp"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/histo_sum"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,7 +22,7 @@
         android:id="@+id/sum_field"
         android:layout_width="200dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="22dp"
+        android:layout_marginBottom="21dp"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/radioGroup"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,36 +33,52 @@
         android:id="@+id/take_another"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="35dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
         android:onClick="reLaunchCamera"
         android:text="Take another photo"
-        app:layout_constraintBottom_toTopOf="@+id/finish_go"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/finish_go"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/finish_go"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="35dp"
         android:text="Finish and Go"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/take_another"
+        app:layout_constraintTop_toBottomOf="@+id/confirm" />
+
+    <Button
+        android:id="@+id/confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:onClick="confirmOption"
+        android:text="confirm"
+        app:layout_constraintBottom_toTopOf="@+id/finish_go"
+        app:layout_constraintEnd_toStartOf="@+id/finish_go"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        app:layout_constraintBottom_toTopOf="@+id/finish_go"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="22dp"
+        android:layout_marginStart="3dp"
+        app:layout_constraintBottom_toTopOf="@+id/confirm"
+        app:layout_constraintStart_toStartOf="@+id/sum_field"
         app:layout_constraintTop_toBottomOf="@+id/sum_field">
+
+        <RadioButton
+            android:id="@+id/keep_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Keep this result." />
 
         <RadioButton
             android:id="@+id/abandon_result"
@@ -70,23 +86,13 @@
             android:layout_height="wrap_content"
             android:text="Abandon this result." />
 
-        <RadioButton
-            android:id="@+id/add_digit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add a digit to this result." />
 
         <RadioButton
             android:id="@+id/sum_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add another number and sum up." />
+            android:text="Keep and sum up another." />
 
-        <RadioButton
-            android:id="@+id/finish"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Finish, go to web search!" />
 
     </RadioGroup>
 
@@ -94,9 +100,9 @@
         android:id="@+id/histo_sum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="none"
         android:text="Historical Sum:"
         app:layout_constraintBottom_toTopOf="@+id/sum_field"
         app:layout_constraintStart_toStartOf="@+id/recog_result"
@@ -106,10 +112,10 @@
         android:id="@+id/recog_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="none"
         android:text="Recognization Result:"
         app:layout_constraintBottom_toTopOf="@+id/result_field"
         app:layout_constraintEnd_toEndOf="parent"
