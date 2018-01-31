@@ -21,7 +21,7 @@ public class RecognitionActivity extends AppCompatActivity {
     float[] imageArray;
     int recognition_result = -1;
     int historical_sum;
-    char RADIO_OPTIONS; // 'N' : None, 'A', abandoned, S' : sum-up
+
 
     // class instances view
     RadioGroup rg;
@@ -38,14 +38,10 @@ public class RecognitionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recognition);
 
-        // restore saved instance state
-        if (savedInstanceState != null) {
-            historical_sum = savedInstanceState.getInt("historical_sum");
-            RADIO_OPTIONS = savedInstanceState.getChar("RADIO_OPTIONS");
-        } else {
-            historical_sum = 0;
-            RADIO_OPTIONS = 'N';
-        }
+        // retrieve image array from intent
+        Intent caller = getIntent();
+        imageArray = caller.getFloatArrayExtra("imageArray");
+        historical_sum = caller.getIntExtra("historical_sum", 0);
 
         // get views and setup initial properties
         rg = (RadioGroup) findViewById(R.id.radioGroup);
@@ -65,32 +61,22 @@ public class RecognitionActivity extends AppCompatActivity {
         finish_go.setClickable(false);
         sum_field.setText("" + historical_sum);
 
-        // retrieve image array from intent
-        Intent caller = getIntent();
-        imageArray = caller.getFloatArrayExtra("imageArray");
 
         // recognize and calculate;
         loadModel();
         TFRecognize();
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-
-        savedInstanceState.putInt("historical_sum", historical_sum);
-        savedInstanceState.putChar("RADIO_OPTIONS", RADIO_OPTIONS);
-    }
-
     public void reLaunchCamera(View v) {
         // show a toast message indicating the radio options
         String msg = "";
-        switch (RADIO_OPTIONS) {
-            case 'A':
+        int checkedId = rg.getCheckedRadioButtonId();
+        switch (checkedId) {
+            case R.id.abandon_result:
                 historical_sum -= recognition_result; // abandon old result;
                 msg = "Old result abandoned! Go for a new one!";
                 break;
-            case 'S':
+            case R.id.sum_up:
                 msg = "Go to add a new value for sum-up!";
                 break;
         }
@@ -99,6 +85,7 @@ public class RecognitionActivity extends AppCompatActivity {
         // start photo activity
         Intent goToPhoto = new Intent();
         goToPhoto.setClass(this, PhotoActivity.class);
+        goToPhoto.putExtra("historical_sum", historical_sum);
         startActivity(goToPhoto);
         finish();
     }
@@ -121,8 +108,6 @@ public class RecognitionActivity extends AppCompatActivity {
                 finish_go.setClickable(true);
                 break;
             case R.id.abandon_result:
-                // add abandon mark 'A'
-                RADIO_OPTIONS = 'A';
                 // toast
                 Toast.makeText(getApplicationContext(), "Result Abandoned!", Toast.LENGTH_SHORT).show();
                 // manipulate numbers
@@ -134,8 +119,6 @@ public class RecognitionActivity extends AppCompatActivity {
                 take_another.setClickable(true);
                 break;
             case R.id.sum_up:
-                // sum up mark 'S'
-                RADIO_OPTIONS = 'S';
                 Toast.makeText(getApplicationContext(), "Result Kept! Go to another", Toast.LENGTH_SHORT).show();
                 // manipulate numbers
                 historical_sum += recognition_result;
@@ -163,6 +146,11 @@ public class RecognitionActivity extends AppCompatActivity {
 
         if (sum_str != null) {
             sum_field.setText(sum_str);
+        }
+
+        // display -1 result as empty
+        if (recognition_result == -1) {
+            result_field.setText("Empty result.");
         }
     }
 

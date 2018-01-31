@@ -15,10 +15,12 @@ import android.widget.ImageView;
 
 public class PhotoActivity extends AppCompatActivity {
     public static final int REQUEST_CAPTURE = 1;
+    public final int PIXEL_SIZE = 64;
 
     // class instance variables
-    int[] pixels = new int[64 * 64];
-    float[] flattenedImage = new float[64 * 64 * 3];
+    int[] pixels = new int[PIXEL_SIZE * PIXEL_SIZE];
+    float[] flattenedImage = new float[PIXEL_SIZE * PIXEL_SIZE * 3];
+    int historical_sum = 0;
 
     // class instances view
     ImageView result_photo;
@@ -41,6 +43,10 @@ public class PhotoActivity extends AppCompatActivity {
         next.setClickable(false);
         welcome.setKeyListener(null);
 
+        // receive the historical sum if relaunched
+        Intent caller = getIntent();
+        historical_sum = caller.getIntExtra("historical_sum", 0);
+
         // check camera availability
         if (!hasCamera()) {
             take.setEnabled(false);
@@ -56,8 +62,8 @@ public class PhotoActivity extends AppCompatActivity {
 
     public void launchCamera(View v) {
         // reinitialize the data if retake a photo
-        pixels = new int[64 * 64];
-        flattenedImage = new float[64 * 64 * 3];
+        pixels = new int[PIXEL_SIZE * PIXEL_SIZE];
+        flattenedImage = new float[PIXEL_SIZE * PIXEL_SIZE * 3];
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(i, REQUEST_CAPTURE);
     }
@@ -68,14 +74,14 @@ public class PhotoActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap photo = (Bitmap) extras.get("data");
-            Bitmap sizedPhoto = Bitmap.createScaledBitmap(photo, 64, 64, true);
+            Bitmap sizedPhoto = Bitmap.createScaledBitmap(photo, PIXEL_SIZE, PIXEL_SIZE, true);
 
             // resize image and get flattened array
             int width = sizedPhoto.getWidth();
             int height = sizedPhoto.getHeight();
             sizedPhoto.getPixels(pixels, 0, width, 0, 0, width, height);
-//            flattenImage();
-            result_photo.setImageBitmap(photo);
+//            result_photo.setImageBitmap(photo);
+            result_photo.setImageBitmap(sizedPhoto);
 
             // enable the next button
             next.setAlpha(1f);
@@ -101,6 +107,7 @@ public class PhotoActivity extends AppCompatActivity {
         Intent goToRecog = new Intent();
         goToRecog.setClass(this, RecognitionActivity.class);
         goToRecog.putExtra("imageArray", flattenedImage);
+        goToRecog.putExtra("historical_sum", historical_sum);
         startActivity(goToRecog);
         finish(); // prevent it going to stack
     }
