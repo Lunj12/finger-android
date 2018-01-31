@@ -176,7 +176,7 @@ def train_model(X_train, Y_train, X_test, Y_test):
     Z3 = forward_propagation(X, parameters)
 
     # use softmax to select out the largest index from the one-hot matrix
-    predicts = tf.nn.softmax(Z3, name="predicts")
+    predicts = tf.nn.softmax(Z3, name="predicts", axis = 0)
 
     # Cost function: Add cost function to tensorflow graph
     cost = compute_cost(Z3, Y)

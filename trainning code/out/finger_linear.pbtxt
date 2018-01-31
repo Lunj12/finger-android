@@ -1405,29 +1405,28 @@ node {
   }
 }
 node {
-  name: "predicts"
-  op: "Softmax"
-  input: "Add_2"
+  name: "Rank"
+  op: "Const"
   attr {
-    key: "T"
+    key: "dtype"
     value {
-      type: DT_FLOAT
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 2
+      }
     }
   }
 }
 node {
-  name: "transpose/Rank"
-  op: "Rank"
-  input: "Add_2"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "transpose/sub/y"
+  name: "Sub/y"
   op: "Const"
   attr {
     key: "dtype"
@@ -1448,10 +1447,10 @@ node {
   }
 }
 node {
-  name: "transpose/sub"
+  name: "Sub"
   op: "Sub"
-  input: "transpose/Rank"
-  input: "transpose/sub/y"
+  input: "Rank"
+  input: "Sub/y"
   attr {
     key: "T"
     value {
@@ -1460,7 +1459,7 @@ node {
   }
 }
 node {
-  name: "transpose/Range/start"
+  name: "range/start"
   op: "Const"
   attr {
     key: "dtype"
@@ -1481,7 +1480,28 @@ node {
   }
 }
 node {
-  name: "transpose/Range/delta"
+  name: "range/limit"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "range/delta"
   op: "Const"
   attr {
     key: "dtype"
@@ -1502,11 +1522,11 @@ node {
   }
 }
 node {
-  name: "transpose/Range"
+  name: "range"
   op: "Range"
-  input: "transpose/Range/start"
-  input: "transpose/Rank"
-  input: "transpose/Range/delta"
+  input: "range/start"
+  input: "range/limit"
+  input: "range/delta"
   attr {
     key: "Tidx"
     value {
@@ -1515,12 +1535,150 @@ node {
   }
 }
 node {
-  name: "transpose/sub_1"
-  op: "Sub"
-  input: "transpose/sub"
-  input: "transpose/Range"
+  name: "range_1/start"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "range_1/delta"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "range_1"
+  op: "Range"
+  input: "range_1/start"
+  input: "Sub"
+  input: "range_1/delta"
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "concat/values_1"
+  op: "Pack"
+  input: "Sub"
+  attr {
+    key: "N"
+    value {
+      i: 1
+    }
+  }
   attr {
     key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "axis"
+    value {
+      i: 0
+    }
+  }
+}
+node {
+  name: "concat/values_3"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+          dim {
+            size: 1
+          }
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "concat/axis"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "concat"
+  op: "ConcatV2"
+  input: "range"
+  input: "concat/values_1"
+  input: "range_1"
+  input: "concat/values_3"
+  input: "concat/axis"
+  attr {
+    key: "N"
+    value {
+      i: 4
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "Tidx"
     value {
       type: DT_INT32
     }
@@ -1530,7 +1688,555 @@ node {
   name: "transpose"
   op: "Transpose"
   input: "Add_2"
-  input: "transpose/sub_1"
+  input: "concat"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tperm"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Shape"
+  op: "Shape"
+  input: "transpose"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "out_type"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Rank_1"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 2
+      }
+    }
+  }
+}
+node {
+  name: "Shape_1"
+  op: "Shape"
+  input: "transpose"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "out_type"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Sub_1/y"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "Sub_1"
+  op: "Sub"
+  input: "Rank_1"
+  input: "Sub_1/y"
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Slice/begin"
+  op: "Pack"
+  input: "Sub_1"
+  attr {
+    key: "N"
+    value {
+      i: 1
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "axis"
+    value {
+      i: 0
+    }
+  }
+}
+node {
+  name: "Slice/size"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+          dim {
+            size: 1
+          }
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "Slice"
+  op: "Slice"
+  input: "Shape_1"
+  input: "Slice/begin"
+  input: "Slice/size"
+  attr {
+    key: "Index"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "concat_1/values_0"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+          dim {
+            size: 1
+          }
+        }
+        int_val: -1
+      }
+    }
+  }
+}
+node {
+  name: "concat_1/axis"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "concat_1"
+  op: "ConcatV2"
+  input: "concat_1/values_0"
+  input: "Slice"
+  input: "concat_1/axis"
+  attr {
+    key: "N"
+    value {
+      i: 2
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Reshape"
+  op: "Reshape"
+  input: "transpose"
+  input: "concat_1"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tshape"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Softmax"
+  op: "Softmax"
+  input: "Reshape"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Reshape_1"
+  op: "Reshape"
+  input: "Softmax"
+  input: "Shape"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tshape"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Sub_2/y"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "Sub_2"
+  op: "Sub"
+  input: "Rank"
+  input: "Sub_2/y"
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "range_2/start"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "range_2/limit"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "range_2/delta"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "range_2"
+  op: "Range"
+  input: "range_2/start"
+  input: "range_2/limit"
+  input: "range_2/delta"
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "range_3/start"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "range_3/delta"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "range_3"
+  op: "Range"
+  input: "range_3/start"
+  input: "Sub_2"
+  input: "range_3/delta"
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "concat_2/values_1"
+  op: "Pack"
+  input: "Sub_2"
+  attr {
+    key: "N"
+    value {
+      i: 1
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "axis"
+    value {
+      i: 0
+    }
+  }
+}
+node {
+  name: "concat_2/values_3"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+          dim {
+            size: 1
+          }
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "concat_2/axis"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "concat_2"
+  op: "ConcatV2"
+  input: "range_2"
+  input: "concat_2/values_1"
+  input: "range_3"
+  input: "concat_2/values_3"
+  input: "concat_2/axis"
+  attr {
+    key: "N"
+    value {
+      i: 4
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "predicts"
+  op: "Transpose"
+  input: "Reshape_1"
+  input: "concat_2"
   attr {
     key: "T"
     value {
@@ -1547,7 +2253,7 @@ node {
 node {
   name: "transpose_1/Rank"
   op: "Rank"
-  input: "Y"
+  input: "Add_2"
   attr {
     key: "T"
     value {
@@ -1658,8 +2364,137 @@ node {
 node {
   name: "transpose_1"
   op: "Transpose"
-  input: "Y"
+  input: "Add_2"
   input: "transpose_1/sub_1"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tperm"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "transpose_2/Rank"
+  op: "Rank"
+  input: "Y"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "transpose_2/sub/y"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "transpose_2/sub"
+  op: "Sub"
+  input: "transpose_2/Rank"
+  input: "transpose_2/sub/y"
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "transpose_2/Range/start"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "transpose_2/Range/delta"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "transpose_2/Range"
+  op: "Range"
+  input: "transpose_2/Range/start"
+  input: "transpose_2/Rank"
+  input: "transpose_2/Range/delta"
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "transpose_2/sub_1"
+  op: "Sub"
+  input: "transpose_2/sub"
+  input: "transpose_2/Range"
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "transpose_2"
+  op: "Transpose"
+  input: "Y"
+  input: "transpose_2/sub_1"
   attr {
     key: "T"
     value {
@@ -1676,7 +2511,7 @@ node {
 node {
   name: "softmax_cross_entropy_with_logits_sg/labels_stop_gradient"
   op: "StopGradient"
-  input: "transpose_1"
+  input: "transpose_2"
   attr {
     key: "T"
     value {
@@ -1708,7 +2543,7 @@ node {
 node {
   name: "softmax_cross_entropy_with_logits_sg/Shape"
   op: "Shape"
-  input: "transpose"
+  input: "transpose_1"
   attr {
     key: "T"
     value {
@@ -1746,7 +2581,7 @@ node {
 node {
   name: "softmax_cross_entropy_with_logits_sg/Shape_1"
   op: "Shape"
-  input: "transpose"
+  input: "transpose_1"
   attr {
     key: "T"
     value {
@@ -1932,7 +2767,7 @@ node {
 node {
   name: "softmax_cross_entropy_with_logits_sg/Reshape"
   op: "Reshape"
-  input: "transpose"
+  input: "transpose_1"
   input: "softmax_cross_entropy_with_logits_sg/concat"
   attr {
     key: "T"
@@ -2909,7 +3744,7 @@ node {
 node {
   name: "gradients/softmax_cross_entropy_with_logits_sg/Reshape_grad/Shape"
   op: "Shape"
-  input: "transpose"
+  input: "transpose_1"
   attr {
     key: "T"
     value {
@@ -2942,9 +3777,9 @@ node {
   }
 }
 node {
-  name: "gradients/transpose_grad/InvertPermutation"
+  name: "gradients/transpose_1_grad/InvertPermutation"
   op: "InvertPermutation"
-  input: "transpose/sub_1"
+  input: "transpose_1/sub_1"
   attr {
     key: "T"
     value {
@@ -2953,10 +3788,10 @@ node {
   }
 }
 node {
-  name: "gradients/transpose_grad/transpose"
+  name: "gradients/transpose_1_grad/transpose"
   op: "Transpose"
   input: "gradients/softmax_cross_entropy_with_logits_sg/Reshape_grad/Reshape"
-  input: "gradients/transpose_grad/InvertPermutation"
+  input: "gradients/transpose_1_grad/InvertPermutation"
   attr {
     key: "T"
     value {
@@ -3026,7 +3861,7 @@ node {
 node {
   name: "gradients/Add_2_grad/Sum"
   op: "Sum"
-  input: "gradients/transpose_grad/transpose"
+  input: "gradients/transpose_1_grad/transpose"
   input: "gradients/Add_2_grad/BroadcastGradientArgs"
   attr {
     key: "T"
@@ -3068,7 +3903,7 @@ node {
 node {
   name: "gradients/Add_2_grad/Sum_1"
   op: "Sum"
-  input: "gradients/transpose_grad/transpose"
+  input: "gradients/transpose_1_grad/transpose"
   input: "gradients/Add_2_grad/BroadcastGradientArgs:1"
   attr {
     key: "T"

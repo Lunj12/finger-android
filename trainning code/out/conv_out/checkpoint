@@ -1,2 +1,0 @@
-model_checkpoint_path: "finger_convnet.chkp"
-all_model_checkpoint_paths: "finger_convnet.chkp"
