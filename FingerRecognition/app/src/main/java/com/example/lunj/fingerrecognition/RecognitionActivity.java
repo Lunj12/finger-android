@@ -183,7 +183,7 @@ public class RecognitionActivity extends AppCompatActivity {
         // start search activity
         Intent goToSearch = new Intent();
         goToSearch.setClass(this, SearchActivity.class);
-        goToSearch.putExtra("numberToSearch", historical_sum);
+        goToSearch.putExtra("historical_sum", historical_sum);
         startActivity(goToSearch);
         finish();
     }
