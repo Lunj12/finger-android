@@ -23,7 +23,7 @@ public class RecognitionActivity extends AppCompatActivity {
     int historical_sum;
 
 
-    // class instances view
+    // class instances views
     RadioGroup rg;
     TextView result_field, sum_field;
     Button confirm, take_another, finish_go;
@@ -177,6 +177,15 @@ public class RecognitionActivity extends AppCompatActivity {
         }
 
         resetTextFields(text, null);
+    }
+
+    public void search(View view) {
+        // start search activity
+        Intent goToSearch = new Intent();
+        goToSearch.setClass(this, SearchActivity.class);
+        goToSearch.putExtra("numberToSearch", historical_sum);
+        startActivity(goToSearch);
+        finish();
     }
 }
 

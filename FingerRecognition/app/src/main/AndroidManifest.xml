@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.lunj.fingerrecognition">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -20,7 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RecognitionActivity"></activity>
+        <activity android:name=".RecognitionActivity" />
+        <activity android:name=".SearchActivity"></activity>
     </application>
 
 </manifest>

@@ -29,7 +29,7 @@ print("Y_test shape: " + str(Y_test.shape))
 
 # global initialization
 MODEL_NAME = 'finger_linear'
-NUM_EPOCHS = 1500
+NUM_EPOCHS = 3000
 MINIBATCH_SIZE = 32
 LEARNING_RATE = 0.0001
 PRINT_COST = True
